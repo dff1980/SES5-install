@@ -11,5 +11,6 @@ salt-key -A -y
 sleep 15
 salt '*' test.ping
 salt '*' cmd.run date
+#salt 'osd-*' grains.append deepsea default
 salt '*' grains.append deepsea default
- 
+
