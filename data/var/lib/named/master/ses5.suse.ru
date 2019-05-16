@@ -1,6 +1,6 @@
 $TTL 2d
 @		IN SOA		admin.ses5.suse.ru.	root.admin.ses5.suse.ru. (
-				2018050801	; serial
+				2019031800	; serial
 				3h		; refresh
 				1h		; retry
 				1w		; expiry
