@@ -41,7 +41,7 @@ Currently, PoC hosted on VMware VSphere.
    1 LAN
 
 ### Network Architecture
-All server connect to LAN network (isolate from another world). In current state - 192.168.21.0/24.
+All server connect to LAN network (isolate from another world). In current state - 192.168.15.0/24.
 Infrastructure server also connects to WAN.
 
 ## Instalation Procedure
@@ -49,9 +49,9 @@ Infrastructure server also connects to WAN.
 #### 1. Install SLES12 SP3
 #### 2. Add FQDN to /etc/hosts
 Exaple change:
-_192.168.21.254 master_
+_192.168.15.254 master_
 to
-_192.168.21.254 master.ses5.suse.ru master_
+_192.168.15.254 master.ses5.suse.ru master_
 or (for eth1 LAN interface)
 ```bash
 echo "$(ip a | grep -A1 eth1 | grep inet | sed 's/\s*inet\s*\(.*\)\/..\sbrd.*/\1/') $(hostname).ses5.suse.ru $(hostname)" >> /etc/hosts
