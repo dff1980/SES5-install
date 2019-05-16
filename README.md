@@ -231,11 +231,17 @@ https://www.suse.com/documentation/suse-enterprise-storage-5/
 ### SUSE CaaS Platform 3 Documentation
 https://www.suse.com/documentation/suse-caasp-3/index.html
 
-### Unstructal
-ipv6 for hostname?
-salt-run state.event pretty=True
-deepsea monitor
+## Appendix A
+To prevent some error(warning) message specify ipv6 for hostname
 
+To pretty out ussing
+```bash
+salt-run state.event pretty=True
+```
+or
+```bash
+deepsea monitor
+```
 #### ceph-authtool
 To create a new keyring containing a key for client.foo:
 
