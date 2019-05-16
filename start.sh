@@ -1,6 +1,6 @@
 #!/bin/bash
 zypper in -y deepsea
-echo "master: admin.ses-demo.suse.ru" > /etc/salt/minion.d/minion.conf
+echo "master: admin.ses5.suse.ru" > /etc/salt/minion.d/minion.conf
 systemctl enable salt-master salt-minion
 systemctl start salt-master
 systemctl start salt-minion

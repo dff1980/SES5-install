@@ -9,7 +9,7 @@
         <interpreter>shell</interpreter>
         <source><![CDATA[
         #!/bin/sh
-        echo "master: admin.ses-demo.suse.ru" > /etc/salt/minion.d/minion.conf
+        echo "master: admin.ses5.suse.ru" > /etc/salt/minion.d/minion.conf
         ]]>
         </source>
       </script>
@@ -19,7 +19,7 @@
         <interpreter>shell</interpreter>
         <source><![CDATA[
         #!/bin/sh
-        echo "$(ip a | grep -A1 eth0 | grep inet | sed 's/\s*inet\s*\(.*\)\/..\sbrd.*/\1/') $(hostname).sdh.suse.ru $(hostname)" >> /etc/hosts
+        echo "$(ip a | grep -A1 eth0 | grep inet | sed 's/\s*inet\s*\(.*\)\/..\sbrd.*/\1/') $(hostname).ses5.suse.ru $(hostname)" >> /etc/hosts
         ]]>
         </source>
       </script>
@@ -659,7 +659,7 @@
         <type>controlkey</type>
       </peer>
       <peer>
-        <address>admin.ses-demo.suse.ru</address>
+        <address>admin.ses5.suse.ru</address>
         <comment/>
         <options>iburst</options>
         <type>server</type>
@@ -1454,7 +1454,7 @@
     <do_registration config:type="boolean">true</do_registration>
     <install_updates config:type="boolean">true</install_updates>
     <slp_discovery config:type="boolean">false</slp_discovery>
-      <reg_server>https://admin.ses-demo.suse.ru</reg_server>
+      <reg_server>https://admin.ses5.suse.ru</reg_server>
       <reg_server_cert_fingerprint_type>SHA256</reg_server_cert_fingerprint_type>
       <reg_server_cert_fingerprint>B1:BF:77:DD:CE:85:19:D5:97:7E:54:26:7A:F7:AF:E3:C8:CE:2C:4B:EE:AF:8F:F7:DE:48:40:54:95:11:5C:E0</reg_server_cert_fingerprint>
     <addons config:type="list">
