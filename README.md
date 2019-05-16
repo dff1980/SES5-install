@@ -54,7 +54,7 @@ to
 _192.168.21.254 master.ses5.suse.ru master_
 or (for eth1 LAN interface)
 ```bash
-echo "$(ip a | grep -A1 eth1 | grep inet | sed 's/\s*inet\s*\(.*\)\/..\sbrd.*/\1/') $(hostname).sdh.suse.ru $(hostname)" >> /etc/hosts
+echo "$(ip a | grep -A1 eth1 | grep inet | sed 's/\s*inet\s*\(.*\)\/..\sbrd.*/\1/') $(hostname).ses5.suse.ru $(hostname)" >> /etc/hosts
 ```
 #### 3. Configure NTP.
 ```bash
@@ -78,13 +78,11 @@ smt-mirror -L /var/log/smt/smt-mirror.log
 ```
 Download next distro:
 - SLE-12-SP3-Server-DVD-x86_64-GM-DVD1.iso
-- SUSE-Enterprise-Storage-5-DVD-x86_64-GM-DVD1.iso
 
 Create install repositories:
 
 ```bash
 mkdir -p /srv/www/htdocs/repo/SUSE/Install/SLE-SERVER/12-SP3
-mkdir -p /srv/www/htdocs/repo/SUSE/Install/Storage/5
 
 mkdir -p /srv/tftpboot/sle12sp3
 mkdir -p /srv/tftpboot/caasp
@@ -95,9 +93,6 @@ rsync -avP /mnt/ /srv/www/htdocs/repo/SUSE/Install/SLE-SERVER/12-SP3/x86_64/
 cp /mnt/boot/x86_64/loader/{linux,initrd} /srv/tftpboot/sle12sp3/
 umount /mnt
 
-mount SUSE-Enterprise-Storage-5-DVD-x86_64-GM-DVD1.iso /mnt
-rsync -avP /mnt/ /srv/www/htdocs/repo/SUSE/Install/Storage/5/x86_64/
-umount /mnt
 ```
 ### 6. Configure DHCP
 ```bash
@@ -119,6 +114,18 @@ copy [/srv/tftpboot/*](data/srv/tftpboot/) to server.
 yast2 dns-server
 ```
 Configure zone for PoC and all nodes.
+
+Put file zone [/var/lib/named/master/ses5.suse.ru](data/var/lib/named/master/ses5.suse.ru) to the server.
+
+Add description in /etc/named.conf
+
+```
+include "/etc/named.conf.include";
+zone "ses5.suse.ru" in {
+        allow-transfer { any; };
+        file "master/ses5.suse.ru";
+        type master;
+```
 
 ## Install SES
 ### 1. Stop firewall at Infrastructure server at installing SES time.
