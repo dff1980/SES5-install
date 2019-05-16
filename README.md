@@ -141,7 +141,7 @@ systemctl start named.service
 ```bash
 zypper in -y tftp
 ```
-copy [/srv/tftpboot/*](data/srv/tftpboot/) to server.
+Copy [/srv/tftpboot/*](data/srv/tftpboot/) to server.
 
 ## Install SES
 ### 1. Stop firewall at Infrastructure server at installing SES time.
