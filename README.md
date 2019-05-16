@@ -48,10 +48,12 @@ Infrastructure server also connects to WAN.
 ### Install infrastructure server
 #### 1. Install SLES12 SP3
 #### 2. Add FQDN to /etc/hosts
+Hostname=admin.ses5.suse.ru
+
 Exaple change:
-_192.168.15.254 master_
+_192.168.15.254 admin_
 to
-_192.168.15.254 master.ses5.suse.ru master_
+_192.168.15.254 admin.ses5.suse.ru admin_
 or (for eth1 LAN interface)
 ```bash
 echo "$(ip a | grep -A1 eth1 | grep inet | sed 's/\s*inet\s*\(.*\)\/..\sbrd.*/\1/') $(hostname).ses5.suse.ru $(hostname)" >> /etc/hosts
