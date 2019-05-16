@@ -146,6 +146,11 @@ zypper in -y tftp
 ```
 Copy [/srv/tftpboot/*](data/srv/tftpboot/) to server.
 
+```bash
+systemctl enable tftp.service
+systemctl start tftp.service
+```
+
 ## Install SES
 ### 1. Stop firewall at Infrastructure server at installing SES time.
 ```bash
