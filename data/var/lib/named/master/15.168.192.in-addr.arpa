@@ -1,5 +1,5 @@
 $TTL 2D
-@               IN SOA          router. root.router. (
+@               IN SOA          admin.ses5.suse.ru. root.admin.ses5.suse.ru. (
                                 2019031800      ; serial
                                 3H              ; refresh
                                 1H              ; retry
