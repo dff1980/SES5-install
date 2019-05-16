@@ -1,19 +1,221 @@
-# SES5-install
-SES5 Install file doc and script
-ipv6 for hostname?
-fqdn for admin
-salt-run state.event pretty=True
-deepsea monitor
+# SUSE Enterprise Storage 5 2019 PoC
+
+This project is PoC installation SUSE Enterprise Storage 5.
+
+Using version:
+- SES 5
+- SLES 12 SP3
+
+This document currently in development state. Any comments and additions are welcome.
+If you need some additional information about it please contact with Pavel Zhukov (pavel.zhukov@suse.com).
+
+
+###### Disclaimer
+###### _At the moment, no one is responsible if you try to use the information below for productive installations or commercial purposes._
+
+## PoC Landscape
+PoC can be deployed in any virtualization environment or on hardware servers.
+Currently, PoC hosted on VMware VSphere.
+
+## Requarments
+
+### Tech Specs
+- 1 dedicated infrastructure server ( DNS, DHCP, PXE, NTP, NAT, SMT, TFTP, SES admin)
+    
+    16GB RAM
+    
+    1 x HDD - 200GB
+    
+    1 LAN adapter
+    
+    1 WAN adapter
+
+- 4 x SES Servers
+  
+   16GB RAM
+  
+   1 x HDD (System) - 100GB
+  
+   3 x HDD (Data) - 20 GB
+  
+   1 LAN
+
+### Network Architecture
+All server connect to LAN network (isolate from another world). In current state - 192.168.21.0/24.
+Infrastructure server also connects to WAN.
+
+## Instalation Procedure
+### Install infrastructure server
+#### 1. Install SLES12 SP3
+#### 2. Add FQDN to /etc/hosts
+Exaple change:
+_192.168.21.254 master_
+to
+_192.168.21.254 master.ses5.suse.ru master_
+or (for eth1 LAN interface)
+```bash
+echo "$(ip a | grep -A1 eth1 | grep inet | sed 's/\s*inet\s*\(.*\)\/..\sbrd.*/\1/') $(hostname).sdh.suse.ru $(hostname)" >> /etc/hosts
+```
+#### 3. Configure NTP.
+```bash
+yast2 ntp-client
+```
+#### 4. Configure Firewall.
+```bash
+yast2 firewall
+```
+#### 5. Configure SMT.
+Execute SMT configuration wizard. During the server certificate setup, all possible DNS for this server has been added (SMT FQDN, etc).
+Add repositories to replication.
+```bash
+sudo zypper in -t pattern smt
+
+for REPO in SLES12-SP3-{Pool,Updates} SUSE-Enterprise-Storage-5-{Pool,Updates}; do
+  smt-repos $REPO sle-12-x86_64 -e
+done
+
+smt-mirror -L /var/log/smt/smt-mirror.log
+```
+Download next distro:
+- SLE-12-SP3-Server-DVD-x86_64-GM-DVD1.iso
+- SUSE-Enterprise-Storage-5-DVD-x86_64-GM-DVD1.iso
+
+Create install repositories:
+
+```bash
+mkdir -p /srv/www/htdocs/repo/SUSE/Install/SLE-SERVER/12-SP3
+mkdir -p /srv/www/htdocs/repo/SUSE/Install/Storage/5
+
+mkdir -p /srv/tftpboot/sle12sp3
+mkdir -p /srv/tftpboot/caasp
+
+
+mount SLE-12-SP3-Server-DVD-x86_64-GM-DVD1.iso /mnt
+rsync -avP /mnt/ /srv/www/htdocs/repo/SUSE/Install/SLE-SERVER/12-SP3/x86_64/
+cp /mnt/boot/x86_64/loader/{linux,initrd} /srv/tftpboot/sle12sp3/
+umount /mnt
+
+mount SUSE-Enterprise-Storage-5-DVD-x86_64-GM-DVD1.iso /mnt
+rsync -avP /mnt/ /srv/www/htdocs/repo/SUSE/Install/Storage/5/x86_64/
+umount /mnt
+```
+### 6. Configure DHCP
+```bash
+yast2 dhcp-server
+```
+or uses next [template](data/etc/dhcpd.conf) for /etc/dhcpd.conf
+restart dhcp service.
+```bash
+systemctl restart dhcpd.service
+```
+### 7. Configure TFTP
+```bash
+yast2 tftp-server
+```
+copy [/srv/tftpboot/*](data/srv/tftpboot/) to server.
+
+### 8. Configure DNS
+```bash
+yast2 dns-server
+```
+Configure zone for PoC and all nodes.
+
+## Install SES
+### 1. Stop firewall at Infrastructure server at installing SES time.
+```bash
+systemctl stop SuSEfirewall2
+```
+### 2. Configure AutoYast
+Put [/srv/www/htdocs/autoyast/autoinst_osd.xml](data/srv/www/htdocs/autoyast/autoinst_osd.xml) to the server.
+
+### 3. Install SES Nodes
+Boot all SES Node from PXE and chose "Install OSD Node" from PXE boot menu.
+
+### 4. Configure SES
+1. Start [data/ses-install/start.sh](data/ses-install/start.sh) at infrastructure server.
+2. Run
+```bash
 salt-run state.orch ceph.stage.0
+```
+3. Run
+```bash
 salt-run state.orch ceph.stage.1
-cp policy.cfg /srv/pillar/ceph/proposals
+```
+4. Put [/srv/pillar/ceph/proposals/policy.cfg](data/srv/pillar/ceph/proposals/policy.cfg) to server.
+5. Run
+```bash
+salt-run state.orch ceph.stage.2
+```
+After the command finishes, you can view the pillar data for minions by running:
+```bash
+salt '*' pillar.items
+```
+6. Run
+```bash
+salt-run state.orch ceph.stage.3
+```
+If it fails, you need to fix the issue and run the previous stages again. After the command succeeds, run the following to check the status:
+```bash
+ceph -s
+```
+7. Run
+```bash
+salt-run state.orch ceph.stage.4
+```
 
-exec hosts.sh at osd node (if dint using autoyast)
+### 5. Start firewall at Infrastructure Server
+```bash
+systemctl start SuSEfirewall2
+```
 
+## Configure SUSE CaaSP and SES integration
+
+1. Add rbd pool (you can use OpenAttic Web interface at infrastructure node)
+
+2. Retrieve the Ceph admin secret. Get the key value from the file /etc/ceph/ceph.client.admin.keyring.
+
+On the master node apply the configuration that includes the Ceph secret by using kubectl apply. Replace CEPH_SECRET with your Ceph secret.
+```bash
+tux > kubectl apply -f - << *EOF*
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ceph-secret
+type: "kubernetes.io/rbd"
+data:
+  key: "$(echo CEPH_SECRET | base64)"
+*EOF*
+```
+
+3. Add Storage Class
+```bash
+kubectl create -f rbd_storage.yaml
+```
 ## OpenStack Integration (new in SES 5.5!)
 DeepSea now includes an openstack.integrate runner which will create the necessary storage pools and cephx keys for use by OpenStack Glance, Cinder, and Nova. It also returns a block of configuration data that can be used to subsequently configure OpenStack. To learn more about this feature, run the following command on the administration node: salt-run openstack.integrate -d
 
-## ceph-authtool
+## Test Enviroment
+```bash
+ceph status
+rbd list
+rbd create -s 10 rbd_test
+rbd info rbd_test
+rbd rm rbd_test
+```
+
+## Appendix 
+### SUSE Enterprise Storage 5 Documentation
+https://www.suse.com/documentation/suse-enterprise-storage-5/
+
+### SUSE CaaS Platform 3 Documentation
+https://www.suse.com/documentation/suse-caasp-3/index.html
+
+### Unstructal
+ipv6 for hostname?
+salt-run state.event pretty=True
+deepsea monitor
+
+#### ceph-authtool
 To create a new keyring containing a key for client.foo:
 
 ceph-authtool -C -n client.foo --gen-key keyring
