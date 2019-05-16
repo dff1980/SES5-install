@@ -103,15 +103,15 @@ zypper -t pattern in dhcp_dns_server
 #### Configure DHCP
 Put file [/etc/dhcpd.conf](data/etc/dhcpd.conf) to the server.
 
+Set interface in /etc/sysconfig/dhcpd
+```
+DHCPD_INTERFACE="eth1"
+```
+
 start dhcp service.
 ```bash
 systemctl enable dhcpd.service
 systemctl start dhcpd.service
-```
-
-Set interface in /etc/sysconfig/dhcpd
-```
-DHCPD_INTERFACE="eth1"
 ```
 
 #### Configure DNS
