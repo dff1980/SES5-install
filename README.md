@@ -109,6 +109,11 @@ systemctl enable dhcpd.service
 systemctl start dhcpd.service
 ```
 
+Set interface in /etc/sysconfig/dhcpd
+```
+DHCPD_INTERFACE="eth1"
+```
+
 #### Configure DNS
 
 Configure zone for PoC and all nodes.
