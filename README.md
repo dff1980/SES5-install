@@ -120,7 +120,6 @@ Configure zone for PoC and all nodes.
 Put file zone [/var/lib/named/master/ses5.suse.ru](data/var/lib/named/master/ses5.suse.ru) to the server.
 Put file zone [/var/lib/named/master/20.168.192.in-addr.arpa](data/var/lib/named/master/20.168.192.in-addr.arpa) to the server.
 
-
 Add description in /etc/named.conf
 
 ```
