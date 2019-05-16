@@ -12,6 +12,5 @@ label harddisk
 label install-osd-node
   menu label OSD Node
   kernel sle12sp3/linux
-  append load ramdisk=1 initrd=sle12sp3/initrd netsetup=dhcp install=http://admin.ses5.suse.ru/install/SLE12SP3 autoyast=http://admin.ses5.suse.ru/install/autoinst.xml
-
+  append load ramdisk=1 initrd=sle12sp3/initrd netsetup=dhcp install=http://admin.ses5.suse.ru/repo/SUSE/Install/SLE-SERVER/12-SP3/x86_64 autoyast=http://admin.ses5.suse.ru/autoyast/autoinst.xml
 
