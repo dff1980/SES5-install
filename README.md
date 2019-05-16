@@ -96,38 +96,50 @@ cp /mnt/boot/x86_64/loader/{linux,initrd} /srv/tftpboot/sle12sp3/
 umount /mnt
 
 ```
-### 6. Configure DHCP
+
+### 6. Configure DNS & DHCP
+```bash
+zypper -t pattern in dhcp_dns_server
+```
+
+#### Configure DHCP
 ```bash
 yast2 dhcp-server
 ```
 or uses next [template](data/etc/dhcpd.conf) for /etc/dhcpd.conf
 restart dhcp service.
 ```bash
-systemctl restart dhcpd.service
+systemctl enable dhcpd.service
+systemctl start dhcpd.service
 ```
-### 7. Configure TFTP
-```bash
-yast2 tftp-server
-```
-copy [/srv/tftpboot/*](data/srv/tftpboot/) to server.
 
-### 8. Configure DNS
-```bash
-yast2 dns-server
-```
+### Configure DNS
+
 Configure zone for PoC and all nodes.
 
 Put file zone [/var/lib/named/master/ses5.suse.ru](data/var/lib/named/master/ses5.suse.ru) to the server.
+Put file zone [/var/lib/named/master/20.168.192.in-addr.arpa](data/var/lib/named/master/20.168.192.in-addr.arpa) to the server.
+
 
 Add description in /etc/named.conf
 
 ```
-include "/etc/named.conf.include";
 zone "ses5.suse.ru" in {
         allow-transfer { any; };
         file "master/ses5.suse.ru";
         type master;
+};
+zone "15.168.192.in-addr.arpa" in {
+        file "master/15.168.192.in-addr.arpa";
+        type master;
+};        
 ```
+
+### 7. Configure TFTP
+```bash
+zypper in -y tftp
+```
+copy [/srv/tftpboot/*](data/srv/tftpboot/) to server.
 
 ## Install SES
 ### 1. Stop firewall at Infrastructure server at installing SES time.
