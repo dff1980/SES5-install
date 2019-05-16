@@ -103,17 +103,15 @@ zypper -t pattern in dhcp_dns_server
 ```
 
 #### Configure DHCP
-```bash
-yast2 dhcp-server
-```
-or uses next [template](data/etc/dhcpd.conf) for /etc/dhcpd.conf
-restart dhcp service.
+Put file [/etc/dhcpd.conf](data/etc/dhcpd.conf) to the server.
+
+start dhcp service.
 ```bash
 systemctl enable dhcpd.service
 systemctl start dhcpd.service
 ```
 
-### Configure DNS
+#### Configure DNS
 
 Configure zone for PoC and all nodes.
 
@@ -132,6 +130,11 @@ zone "15.168.192.in-addr.arpa" in {
         file "master/15.168.192.in-addr.arpa";
         type master;
 };        
+```
+
+```bash
+systemctl enable named.service
+systemctl start named.service
 ```
 
 ### 7. Configure TFTP
