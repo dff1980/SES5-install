@@ -147,6 +147,11 @@ zypper in -y tftp
 Copy [/srv/tftpboot/*](data/srv/tftpboot/) to server.
 
 ```bash
+yast2 tftp-server
+```
+
+or SYSTEMD (!!!need to change to xinetd!!!)
+```bash
 systemctl enable tftp.service
 systemctl start tftp.service
 ```
