@@ -147,7 +147,7 @@ zypper in -y tftp
 ```bash
 yast2 tftp-server
 ```
-or add to autostart xntpd and configure tfpf
+or add to autostart xntpd and configure tfpfd
 
 Copy [/srv/tftpboot/*](data/srv/tftpboot/) to server.
 
