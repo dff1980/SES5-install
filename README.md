@@ -144,15 +144,12 @@ systemctl start named.service
 ```bash
 zypper in -y tftp
 ```
-Copy [/srv/tftpboot/*](data/srv/tftpboot/) to server.
-
 ```bash
 yast2 tftp-server
 ```
+or add to autostart xntpd and configure tfpf
 
-~~or SYSTEMD (!!!need to change to xinetd!!!)~~
-~~systemctl enable tftp.service~~
-~~systemctl start tftp.service~~
+Copy [/srv/tftpboot/*](data/srv/tftpboot/) to server.
 
 ## Install SES
 ### 1. Stop firewall at Infrastructure server at installing SES time.
