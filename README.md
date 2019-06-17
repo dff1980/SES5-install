@@ -97,7 +97,7 @@ umount /mnt
 
 ### 6. Configure DNS & DHCP
 ```bash
-zypper -t pattern in dhcp_dns_server
+zypper in -t pattern dhcp_dns_server
 ```
 
 #### Configure DHCP
