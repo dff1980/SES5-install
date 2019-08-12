@@ -1,4 +1,4 @@
-# SUSE Enterprise Storage 5 2019 PoC
+# SUSE Enterprise Storage 6 2019 PoC
 
 This project is PoC installation SUSE Enterprise Storage 6.
 
@@ -72,9 +72,8 @@ Add repositories to replication.
 
 rmt-cli sync
 
-for REPO in SLE-Product-SLES15-SP1-{Pool,Updates} SLE-Module-Server-Applications15-SP1-{Pool,Updates} SLE-Module-Basesystem15-SP1-{Pool,Updates} SUSE-Enterprise-Storage-6-{Pool,Updates}; do
-  rmt-cli repos $REPO sle-12-x86_64 -e
-done
+repos=$(rmt-cli repos list --all); for REPO in SLE-Product-SLES15-SP1-{Pool,Updates} SLE-Module-Server-Applications15-SP1-{Pool,Updates} SLE-Module-Basesystem15-SP1-{Pool,Updates} SUSE-Enterprise-Storage-6-{Pool,Updates}; do  rmt-cli repos enable $(echo "$repos" | grep "$REPO for sle-15-x86_64" | sed "s/^|\s\+\([0-9]*\)\s\+|.*/\1/"); done
+
 
 rmt-cli mirror 
 ```
@@ -154,14 +153,18 @@ Copy [/srv/tftpboot/*](data/srv/tftpboot/) to server.
 ## Install SES
 ### 1. Stop firewall at Infrastructure server at installing SES time.
 ```bash
-systemctl stop SuSEfirewall2
+systemctl stop firewalld
 ```
 ### 2. Configure AutoYast
-Put [/srv/www/htdocs/autoyast/autoinst_osd.xml](data/srv/www/htdocs/autoyast/autoinst_osd.xml) to the server.
+```bash
+mkdir /var/lib/rmt/public/autoyast/
+```
+
+Put [/var/lib/rmt/public/autoyast/autoinst_osd.xml](data/srv/www/htdocs/autoyast/autoinst_osd.xml) to the server.
 
 get AutoYast Fingerprint
 
-openssl x509 -noout -fingerprint -sha256 -inform pem -in /srv/www/htdocs/smt.crt
+openssl x509 -noout -fingerprint -sha256 -inform pem -in /etc/rmt/ssl/rmt-server.crt
 
 Change /srv/www/htdocs/autoyast/autoinst_osd.xml Add
 
@@ -170,6 +173,16 @@ to <suse_register>
 <reg_server>https://smt.sdh.suse.ru</reg_server> <reg_server_cert_fingerprint_type>SHA256</reg_server_cert_fingerprint_type> 
 
 <reg_server_cert_fingerprint>YOUR SMT FINGERPRINT</reg_server_cert_fingerprint>
+
+Add to /etc/nginx/vhosts.d/rmt-server-http.conf
+```
+    location /autoyast {
+        autoindex on;
+    }
+```
+```bash
+systemctl restart nginx
+```
 
 ### 3. Install SES Nodes
 Boot all SES Node from PXE and chose "Install OSD Node" from PXE boot menu.
