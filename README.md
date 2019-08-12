@@ -78,18 +78,18 @@ repos=$(rmt-cli repos list --all); for REPO in SLE-Product-SLES15-SP1-{Pool,Upda
 rmt-cli mirror 
 ```
 Download next distro:
-- SLE-12-SP3-Server-DVD-x86_64-GM-DVD1.iso
+- SLE-15-SP1-Installer-DVD-x86_64-GM-DVD1.iso
 
 Create install repositories:
 
 ```bash
-mkdir -p /srv/www/htdocs/repo/SUSE/Install/SLE-SERVER/12-SP3
+mkdir -p /usr/share/rmt/public/repo/SUSE/Install/SLE-SERVER/15-SP1/
 
-mkdir -p /srv/tftpboot/sle12sp3
+mkdir -p /srv/tftpboot/sle15sp1
 
-mount SLE-12-SP3-Server-DVD-x86_64-GM-DVD1.iso /mnt
-rsync -avP /mnt/ /srv/www/htdocs/repo/SUSE/Install/SLE-SERVER/12-SP3/x86_64/
-cp /mnt/boot/x86_64/loader/{linux,initrd} /srv/tftpboot/sle12sp3/
+mount SLE-15-SP1-Installer-DVD-x86_64-GM-DVD1.iso /mnt
+rsync -avP /mnt/ /usr/share/rmt/public/repo/SUSE/Install/SLE-SERVER/15-SP1/
+cp /mnt/boot/x86_64/loader/{linux,initrd} /srv/tftpboot/sle15sp1/
 umount /mnt
 
 ```
