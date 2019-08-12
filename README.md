@@ -100,7 +100,7 @@ zypper in -t pattern dhcp_dns_server
 ```
 
 #### Configure DHCP
-Put file [/etc/dhcpd.conf](data/etc/dhcpd.conf) to the server.
+Put file [/etc/dhcpd.conf](etc/dhcpd.conf) to the server.
 
 Set interface in /etc/sysconfig/dhcpd
 ```
@@ -117,15 +117,15 @@ systemctl start dhcpd.service
 
 Configure zone for PoC and all nodes.
 
-Put file zone [/var/lib/named/master/ses5.suse.ru](data/var/lib/named/master/ses5.suse.ru) to the server.
-Put file zone [/var/lib/named/master/20.168.192.in-addr.arpa](data/var/lib/named/master/20.168.192.in-addr.arpa) to the server.
+Put file zone [/var/lib/named/master/ses6.suse.ru](var/lib/named/master/ses6.suse.ru) to the server.
+Put file zone [/var/lib/named/master/20.168.192.in-addr.arpa](var/lib/named/master/20.168.192.in-addr.arpa) to the server.
 
 Add description in /etc/named.conf
 
 ```
-zone "ses5.suse.ru" in {
+zone "ses6.suse.ru" in {
         allow-transfer { any; };
-        file "master/ses5.suse.ru";
+        file "master/ses6.suse.ru";
         type master;
 };
 zone "15.168.192.in-addr.arpa" in {
@@ -148,7 +148,7 @@ yast2 tftp-server
 ```
 or add to autostart xntpd and configure tfpfd
 
-Copy [/srv/tftpboot/*](data/srv/tftpboot/) to server.
+Copy [/srv/tftpboot/*](srv/tftpboot/) to server.
 
 ## Install SES
 ### 1. Stop firewall at Infrastructure server at installing SES time.
@@ -157,11 +157,14 @@ systemctl stop firewalld
 ```
 ### 2. Configure AutoYast
 ```bash
-mkdir /var/lib/rmt/public/autoyast/
+mkdir /usr/share/rmt/public/autoyast
 ```
 
-Put [/var/lib/rmt/public/autoyast/autoinst_osd.xml](data/srv/www/htdocs/autoyast/autoinst_osd.xml) to the server.
+Put [/usr/share/rmt/public/autoyast/autoinst_osd.xml](srv/www/htdocs/autoyast/autoinst_osd.xml) to the server.
 
+````bash
+chown -R _rmt:nginx autoyast
+```
 get AutoYast Fingerprint
 
 openssl x509 -noout -fingerprint -sha256 -inform pem -in /etc/rmt/ssl/rmt-server.crt
