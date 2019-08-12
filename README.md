@@ -1,10 +1,10 @@
 # SUSE Enterprise Storage 5 2019 PoC
 
-This project is PoC installation SUSE Enterprise Storage 5.
+This project is PoC installation SUSE Enterprise Storage 6.
 
 Using version:
-- SES 5
-- SLES 12 SP3
+- SES 6
+- SLES 15 SP1
 
 This document currently in development state. Any comments and additions are welcome.
 If you need some additional information about it please contact with Pavel Zhukov (pavel.zhukov@suse.com).
@@ -46,18 +46,13 @@ Infrastructure server also connects to WAN.
 
 ## Instalation Procedure
 ### Install infrastructure server
-#### 1. Install SLES12 SP3
-#### 2. Add FQDN to /etc/hosts
-Hostname=admin.ses5.suse.ru
+#### 1. Install SLES15 SP1
 
-Exaple change:
-_192.168.15.254 admin_
-to
-_192.168.15.254 admin.ses5.suse.ru admin_
-or (for eth1 LAN interface)
-```bash
-echo "$(ip a | grep -A1 eth1 | grep inet | sed 's/\s*inet\s*\(.*\)\/..\sbrd.*/\1/') $(hostname).ses5.suse.ru $(hostname)" >> /etc/hosts
-```
+#### 2. Configure lan card 
+
+##### Add FQDN to /etc/hosts (enter to hostname in eth1 interface)
+Hostname=ses-admin.ses6.suse.ru
+
 #### 3. Configure NTP.
 ```bash
 yast2 ntp-client
@@ -67,16 +62,21 @@ yast2 ntp-client
 yast2 firewall
 ```
 #### 5. Configure SMT.
-Execute SMT configuration wizard. During the server certificate setup, all possible DNS for this server has been added (SMT FQDN, etc).
-Add repositories to replication.
 ```bash
-sudo zypper in -t pattern smt
+sudo zypper in rmt-server
+```
+Execute RMT configuration wizard. During the server certificate setup, all possible DNS for this server has been added (RMT FQDN, etc).
+Add repositories to replication.
 
-for REPO in SLES12-SP3-{Pool,Updates} SUSE-Enterprise-Storage-5-{Pool,Updates}; do
-  smt-repos $REPO sle-12-x86_64 -e
+```bash
+
+rmt-cli sync
+
+for REPO in SLE-Product-SLES15-SP1-{Pool,Updates} SLE-Module-Server-Applications15-SP1-{Pool,Updates} SLE-Module-Basesystem15-SP1-{Pool,Updates} SUSE-Enterprise-Storage-6-{Pool,Updates}; do
+  rmt-cli repos $REPO sle-12-x86_64 -e
 done
 
-smt-mirror -L /var/log/smt/smt-mirror.log
+rmt-cli mirror 
 ```
 Download next distro:
 - SLE-12-SP3-Server-DVD-x86_64-GM-DVD1.iso
